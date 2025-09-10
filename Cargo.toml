@@ -1,0 +1,30 @@
+[workspace]
+resolver = "2"
+members = ["mem0-blueprint-lib", "mem0-blueprint-bin"]
+
+[workspace.package]
+version = "0.1.0"
+description = "Memory MCP Server Blueprint for Tangle Network"
+edition = "2021"
+authors = ["Your Name <your.email@example.com>"]
+license = "MIT OR Apache-2.0"
+homepage = "https://github.com/yourusername/mem0-blueprint-template"
+repository = "https://github.com/yourusername/mem0-blueprint-template"
+readme = "README.md"
+categories = ["cryptography", "cryptography::cryptocurrencies"]
+keywords = ["tangle", "blueprint", "avs", "memory", "mcp"]
+
+[workspace.dependencies]
+mem0-blueprint-lib = { path = "mem0-blueprint-lib" }
+
+blueprint-sdk = { version = "0.1.0-alpha.6", default-features = false }
+tokio = { version = "1", default-features = false }
+color-eyre = "0.6"
+tower = { version = "0.5", default-features = false }
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+tracing = "0.1"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+uuid = { version = "1.0", features = ["v4"] }
+chrono = { version = "0.4", features = ["serde"] }
+clap = { version = "4.0", features = ["derive"] }

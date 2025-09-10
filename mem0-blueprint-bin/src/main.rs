@@ -11,15 +11,47 @@ use blueprint_sdk::tangle::consumer::TangleConsumer;
 use blueprint_sdk::tangle::filters::MatchesServiceId;
 use blueprint_sdk::tangle::layers::TangleLayer;
 use blueprint_sdk::tangle::producer::TangleProducer;
-use {{project-name | snake_case}}_blueprint_lib::{MyContext, SAY_HELLO_JOB_ID, say_hello};
+use mem0_blueprint_lib::{
+    MemoryContext, ADD_MEMORY_JOB_ID, SEARCH_MEMORY_JOB_ID, GET_MEMORY_JOB_ID,
+    UPDATE_MEMORY_JOB_ID, DELETE_MEMORY_JOB_ID, GET_ALL_MEMORIES_JOB_ID,
+    add_memory, search_memory, get_memory, update_memory, delete_memory, get_all_memories
+};
 use tower::filter::FilterLayer;
 use tracing::error;
 use tracing::level_filters::LevelFilter;
+use clap::{Parser, Subcommand};
+
+mod benchmark;
+
+#[derive(Parser)]
+#[command(name = "memory-mcp-server")]
+#[command(about = "A memory server MCP blueprint for Tangle Network")]
+struct Cli {
+    #[command(subcommand)]
+    command: Commands,
+}
+
+#[derive(Subcommand)]
+enum Commands {
+    Run,
+    Benchmark(benchmark::BenchmarkArgs),
+}
 
 #[tokio::main]
-async fn main() -> Result<(), blueprint_sdk::Error> {
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     setup_log();
 
+    let cli = Cli::parse();
+
+    match cli.command {
+        Commands::Run => run_blueprint().await?,
+        Commands::Benchmark(args) => benchmark::run_benchmark(args).await?,
+    }
+
+    Ok(())
+}
+
+async fn run_blueprint() -> Result<(), blueprint_sdk::Error> {
     let env = BlueprintEnvironment::load()?;
     let sr25519_signer = env.keystore().first_local::<SpSr25519>()?;
     let sr25519_pair = env.keystore().get_secret::<SpSr25519>(&sr25519_signer)?;
@@ -35,48 +67,24 @@ async fn main() -> Result<(), blueprint_sdk::Error> {
     let service_id = env.protocol_settings.tangle()?.service_id.unwrap();
     let result = BlueprintRunner::builder(tangle_config, env)
         .router(
-            // A router
-            //
-            // Each "route" is a job ID and the job function. We can also support arbitrary `Service`s from `tower`,
-            // which may make it easier for people to port over existing services to a blueprint.
             Router::new()
-                // The route defined here has a `TangleLayer`, which adds metadata to the
-                // produced `JobResult`s, making it visible to a `TangleConsumer`.
-                .route(SAY_HELLO_JOB_ID, say_hello.layer(TangleLayer))
-                // Add the `FilterLayer` to filter out job calls that don't match the service ID
-                //
-                // This layer is global to the router, and is applied to every job call.
+                .route(ADD_MEMORY_JOB_ID, add_memory.layer(TangleLayer))
+                .route(SEARCH_MEMORY_JOB_ID, search_memory.layer(TangleLayer))
+                .route(GET_MEMORY_JOB_ID, get_memory.layer(TangleLayer))
+                .route(UPDATE_MEMORY_JOB_ID, update_memory.layer(TangleLayer))
+                .route(DELETE_MEMORY_JOB_ID, delete_memory.layer(TangleLayer))
+                .route(GET_ALL_MEMORIES_JOB_ID, get_all_memories.layer(TangleLayer))
                 .layer(FilterLayer::new(MatchesServiceId(service_id)))
-                // We can add a context to the router, which will be passed to all job functions
-                // that have the `Context` extractor.
-                //
-                // A context can be used for global state between job calls, such as a database.
-                //
-                // It is important to note that the context is **cloned** for each job call, so
-                // the context must be cheaply cloneable.
-                .with_context(MyContext::new()),
+                .with_context(MemoryContext::new()),
         )
-        // Add potentially many producers
-        //
-        // A producer is simply a `Stream` that outputs `JobCall`s, which are passed down to the intended
-        // job functions.
         .producer(tangle_producer)
-        // Add potentially many consumers
-        //
-        // A consumer is simply a `Sink` that consumes `JobResult`s, which are the output of the job functions.
-        // Every result will be passed to every consumer. It is the responsibility of the consumer
-        // to determine whether or not to process a result.
         .consumer(tangle_consumer)
-        // Custom shutdown handlers
-        //
-        // Now users can specify what to do when an error occurs and the runner is shutting down.
-        // That can be cleanup logic, finalizing database transactions, etc.
-        .with_shutdown_handler(async { println!("Shutting down!") })
+        .with_shutdown_handler(async { println!("Memory MCP server shutting down...") })
         .run()
         .await;
 
     if let Err(e) = result {
-        error!("Runner failed! {e:?}");
+        error!("Blueprint runner failed: {e:?}");
     }
 
     Ok(())

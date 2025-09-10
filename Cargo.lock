@@ -3775,8 +3775,10 @@ checksum = "1a7964611d71df112cb1730f2ee67324fcf4d0fc6606acbbe9bfe06df124637c"
 dependencies = [
  "android-tzdata",
  "iana-time-zone",
+ "js-sys",
  "num-traits",
  "serde",
+ "wasm-bindgen",
  "windows-link",
 ]
 
@@ -6222,27 +6224,6 @@ name = "foldhash"
 version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d9c4f5dac5e15c24eb999c26181a6ca40b39fe946cbe4c263c7209467bc83af2"
-
-[[package]]
-name = "foo-blueprint-bin"
-version = "0.1.0"
-dependencies = [
- "blueprint-sdk",
- "foo-blueprint-lib",
- "tokio",
- "tower",
- "tracing",
- "tracing-subscriber 0.3.19",
-]
-
-[[package]]
-name = "foo-blueprint-lib"
-version = "0.1.0"
-dependencies = [
- "blueprint-sdk",
- "color-eyre",
- "tokio",
-]
 
 [[package]]
 name = "foreign-types"
@@ -8920,6 +8901,33 @@ checksum = "d89e7ee0cfbedfc4da3340218492196241d89eefb6dab27de5df917a6d2e78cf"
 dependencies = [
  "cfg-if 1.0.0",
  "digest 0.10.7",
+]
+
+[[package]]
+name = "mem0-blueprint-bin"
+version = "0.1.0"
+dependencies = [
+ "blueprint-sdk",
+ "clap",
+ "mem0-blueprint-lib",
+ "serde_json",
+ "tokio",
+ "tower",
+ "tracing",
+ "tracing-subscriber 0.3.19",
+]
+
+[[package]]
+name = "mem0-blueprint-lib"
+version = "0.1.0"
+dependencies = [
+ "blueprint-sdk",
+ "chrono",
+ "color-eyre",
+ "serde",
+ "serde_json",
+ "tokio",
+ "uuid 1.16.0",
 ]
 
 [[package]]

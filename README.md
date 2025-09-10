@@ -1,22 +1,22 @@
-# <h1 align="center">Hello World Tangle Blueprint 🌐</h1>
+# Memory MCP Server Blueprint
 
-## 📚 Overview
+## Overview
 
-This Tangle Blueprint provides a simple Hello World job.
-Blueprints are specifications for <abbr title="Actively Validated Services">AVS</abbr>s on the Tangle Network. An AVS is
-an off-chain service that runs arbitrary computations for a user-specified period of time.
+This Tangle Blueprint implements a Memory Context Protocol (MCP) server that provides intelligent memory management capabilities. It's designed to work with AI agents and applications that need persistent, searchable memory storage.
 
-Blueprints provide a useful abstraction, allowing developers to create reusable service infrastructures as if they were
-smart contracts. This enables developers to monetize their work and align long-term incentives with the success of their
-creations, benefiting proportionally to their Blueprint's usage.
+The blueprint implements the mem0 memory architecture patterns and provides a complete MCP-compatible server for memory operations. It can be used as a self-hosted alternative to managed memory services, giving you full control over your AI agent's memory data.
 
-For more details, please refer to the [project documentation](https://docs.tangle.tools/developers/blueprints/introduction).
+For more details about Tangle Blueprints, refer to the [project documentation](https://docs.tangle.tools/developers/blueprints/introduction).
 
-## 🚀 Features
+## Features
 
-- Custom greeting messages
-- Default "Hello World!" messages
-- ...
+- **Memory Operations**: Add, search, get, update, delete, and list memories
+- **Multi-level Memory**: Support for user, agent, and session-scoped memories
+- **Metadata Support**: Rich metadata storage and filtering capabilities
+- **MCP Protocol**: Full Model Context Protocol compatibility
+- **High Performance**: Optimized for concurrent memory operations
+- **Benchmarking**: Built-in performance benchmarking tools
+- **Task Orchestrator Compatible**: Ready for integration with task orchestration systems
 
 ## 📋 Prerequisites
 
@@ -36,31 +36,69 @@ To install the Tangle CLI, run the following command:
 cargo install cargo-tangle --git https://github.com/tangle-network/blueprint
 ```
 
-## ⭐ Getting Started
+## Getting Started
 
-Once `cargo-tangle` is installed, you can create a new project with the following command:
+### Running the Memory MCP Server
 
-```sh
-cargo tangle blueprint create --name <project-name>
-```
-
-and follow the instructions to create a new project.
-
-## 🛠️ Development
-
-Once you have created a new project, you can run the following command to start the project:
+Build and run the memory server:
 
 ```sh
-cargo build
+cargo build --release
+cargo run --bin mem0-blueprint-bin run
 ```
 
-to build the project, and
+### Running Benchmarks
+
+The blueprint includes comprehensive benchmarking tools compatible with task orchestrators:
+
+```sh
+# Run basic benchmark
+cargo run --bin mem0-blueprint-bin benchmark
+
+# Run with custom parameters
+cargo run --bin mem0-blueprint-bin benchmark \
+  --operations 5000 \
+  --concurrent 20 \
+  --content-size 200 \
+  --complexity complex \
+  --delay-ms 0
+
+# Output results as JSON
+cargo run --bin mem0-blueprint-bin benchmark --json-output
+
+# Output results as CSV for analysis
+cargo run --bin mem0-blueprint-bin benchmark --csv-output
+```
+
+### Memory Operations
+
+The blueprint supports the following memory operations:
+
+1. **Add Memory** (Job ID: 0): Store new memories with content, user/agent/session context, and metadata
+2. **Search Memory** (Job ID: 1): Search memories by content with filtering by user/agent/session
+3. **Get Memory** (Job ID: 2): Retrieve a specific memory by ID
+4. **Update Memory** (Job ID: 3): Update memory content and metadata
+5. **Delete Memory** (Job ID: 4): Remove a memory by ID
+6. **Get All Memories** (Job ID: 5): List all memories with optional filtering
+
+### MCP Integration
+
+The blueprint implements the Model Context Protocol (MCP) specification, making it compatible with MCP clients. The server provides tools for:
+
+- `add_memory`: Add new memories to the store
+- `search_memory`: Search existing memories
+- `get_memory`: Retrieve specific memories
+- `update_memory`: Update memory content
+- `delete_memory`: Remove memories
+- `get_all_memories`: List all memories
+
+### Deployment
+
+Deploy the blueprint to the Tangle network:
 
 ```sh
 cargo tangle blueprint deploy
 ```
-
-to deploy the blueprint to the Tangle network.
 
 ## 📜 License
 

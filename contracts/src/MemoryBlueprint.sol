@@ -4,11 +4,11 @@ pragma solidity >=0.8.13;
 import "tnt-core/BlueprintServiceManagerBase.sol";
 
 /**
- * @title HelloBlueprint
- * @dev This contract is an example of a service blueprint that provides a single service.
+ * @title MemoryBlueprint
+ * @dev This contract manages a memory server MCP blueprint that provides memory operations.
  * @dev For all supported hooks, check the `BlueprintServiceManagerBase` contract.
  */
-contract HelloBlueprint is BlueprintServiceManagerBase {
+contract MemoryBlueprint is BlueprintServiceManagerBase {
     /**
      * @dev Hook for service operator registration. Called when a service operator
      * attempts to register with the blueprint.

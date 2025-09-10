@@ -27,7 +27,7 @@ RUN apt-get update && \
     apt-get install -y libssl3 && \
     rm -rf /var/lib/apt/lists/*
 
-COPY --from=app-builder /app/target/release/{{project-name}}-blueprint-bin /usr/local/bin
+COPY --from=app-builder /app/target/release/mem0-blueprint-bin /usr/local/bin
 
 LABEL org.opencontainers.image.authors="{{authors}}"
 LABEL org.opencontainers.image.description="{{project-description}}"
@@ -42,4 +42,4 @@ ENV SERVICE_ID=0
 ENV CHAIN="testnet"
 ENV KEYSTORE_URI="./keystore"
 
-ENTRYPOINT ["/usr/local/bin/{{project-name}}-blueprint-bin", "run"]
+ENTRYPOINT ["/usr/local/bin/mem0-blueprint-bin", "run"]
