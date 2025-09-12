@@ -1,0 +1,33 @@
+[
+  {
+    "config": {
+      "runtime": "mem0",
+      "package": "mem0ai/mem0:latest",
+      "args": [],
+      "env": [
+        ["LOG_LEVEL", "DEBUG"],
+        ["MEM0_DEBUG", "true"]
+      ],
+      "transportAdapter": "none",
+      "mem0Config": {
+        "openaiApiKey": "sk-your-openai-api-key-here",
+        "enableMcpServer": true,
+        "postgresConfig": {
+          "database": "memory_db",
+          "user": "memuser",
+          "password": "secure_password_123",
+          "port": 5433
+        },
+        "neo4jConfig": {
+          "user": "neo4j",
+          "password": "neo4j_secure_pass",
+          "port": 7688
+        },
+        "apiConfig": {
+          "port": 9000,
+          "host": "0.0.0.0"
+        }
+      }
+    }
+  }
+]

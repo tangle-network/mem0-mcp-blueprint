@@ -1,0 +1,30 @@
+[
+  {
+    "config": {
+      "runtime": "mem0",
+      "package": "mem0ai/mem0:latest",
+      "args": [],
+      "env": [],
+      "transportAdapter": "none",
+      "mem0Config": {
+        "openaiApiKey": "your-openai-api-key-here",
+        "enableMcpServer": true,
+        "postgresConfig": {
+          "database": "mem0",
+          "user": "mem0user",
+          "password": "mem0pass",
+          "port": 5432
+        },
+        "neo4jConfig": {
+          "user": "neo4j",
+          "password": "mem0pass",
+          "port": 7687
+        },
+        "apiConfig": {
+          "port": 8888,
+          "host": "0.0.0.0"
+        }
+      }
+    }
+  }
+]

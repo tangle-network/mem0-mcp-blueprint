@@ -1,5 +1,5 @@
 {
-  description = "Hello World Blueprint development environment";
+  description = "MCP Blueprint development environment";
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     flake-utils.url = "github:numtide/flake-utils";
@@ -11,7 +11,7 @@
       };
     };
     foundry = {
-      url = "github:shazow/foundry.nix/monthly";
+      url = "github:shazow/foundry.nix/stable";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
@@ -19,15 +19,35 @@
     };
   };
 
-  outputs = { self, nixpkgs, rust-overlay, foundry, flake-utils }:
-    flake-utils.lib.eachDefaultSystem (system:
+  outputs =
+    {
+      self,
+      nixpkgs,
+      rust-overlay,
+      foundry,
+      flake-utils,
+    }:
+    flake-utils.lib.eachDefaultSystem (
+      system:
       let
-        overlays = [ (import rust-overlay) foundry.overlay ];
+        overlays = [
+          (import rust-overlay)
+          foundry.overlay
+        ];
         pkgs = import nixpkgs {
           inherit system overlays;
         };
         lib = pkgs.lib;
-        toolchain = pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
+        toolchain = pkgs.rust-bin.stable.latest.default.override {
+          extensions = [
+            # We need the `rust-src` component for `rust-analyzer`
+            "rust-src"
+            # We need the `rustfmt` component for `cargo fmt`
+            "rustfmt"
+            # We need the `clippy` component for `cargo clippy`
+            "clippy"
+          ];
+        };
       in
       {
         devShells.default = pkgs.mkShell {
@@ -38,6 +58,7 @@
             pkgs.libclang.lib
             pkgs.openssl.dev
             pkgs.gmp
+            pkgs.protobuf
             # Mold Linker for faster builds (only on Linux)
             (lib.optionals pkgs.stdenv.isLinux pkgs.om4)
             (lib.optionals pkgs.stdenv.isLinux pkgs.mold)
@@ -55,10 +76,15 @@
             pkgs.cargo-nextest
             pkgs.cargo-expand
           ];
-          packages = [];
+          packages = [ ];
           # Environment variables
           RUST_SRC_PATH = "${toolchain}/lib/rustlib/src/rust/library";
-          LD_LIBRARY_PATH = lib.makeLibraryPath [ pkgs.gmp pkgs.libclang pkgs.openssl.dev ];
+          LD_LIBRARY_PATH = lib.makeLibraryPath [
+            pkgs.gmp
+            pkgs.libclang
+            pkgs.openssl.dev
+          ];
         };
-      });
+      }
+    );
 }
